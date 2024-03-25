@@ -9,7 +9,7 @@ A utility to make handling many resumes easier by automatically pulling contact 
 pip install -r requirements.txt
 
 # Retrieve language model from spacy
-python -m spacy download en
+python -m spacy download en_core_web_sm
 
 # Run code (with default configurations)
 cd bin/

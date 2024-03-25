@@ -8,6 +8,7 @@ Code Template
 import inspect
 import logging
 import os
+import re
 import sys
 
 import pandas
@@ -33,7 +34,7 @@ def main():
     observations = extract()
 
     # Spacy: Spacy NLP
-    nlp = spacy.load('en')
+    nlp = spacy.load('en_core_web_sm')
 
     # Transform data to have appropriate fields
     observations, nlp = transform(observations, nlp)
@@ -80,11 +81,11 @@ def transform(observations, nlp):
     # Extract candidate name
     observations['candidate_name'] = observations['text'].apply(lambda x:
                                                                 field_extraction.candidate_name_extractor(x, nlp))
-    
-    if observations['candidate_name'] == "NOT FOUND":
-        match = re.search(field_extraction.NAME_REGEX, observations['text'], re.IGNORECASE)
-        observations['candidate_name'] = match[0]
-        
+
+    for index, candidate_name in observations['candidate_name'].items():
+        if candidate_name == "NOT FOUND":
+            match = re.search(field_extraction.NAME_REGEX, observations['text'][index], re.IGNORECASE)
+            observations['candidate_name'][index] = match[0]
 
     # Extract contact fields
     observations['email'] = observations['text'].apply(lambda x: lib.term_match(x, field_extraction.EMAIL_REGEX))

@@ -24,13 +24,13 @@ def load_confs(confs_path='../confs/config.yaml'):
 
     if CONFS is None:
         try:
-            CONFS = yaml.load(open(confs_path))
+            CONFS = yaml.safe_load(open(confs_path))
         except IOError:
             confs_template_path = confs_path + '.template'
             logging.warn(
                 'Confs path: {} does not exist. Attempting to load confs template, '
                 'from path: {}'.format(confs_path, confs_template_path))
-            CONFS = yaml.load(open(confs_template_path))
+            CONFS = yaml.safe_load(open(confs_template_path))
     return CONFS
 
 
