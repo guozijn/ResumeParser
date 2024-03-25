@@ -10,3 +10,4 @@
 # Configuration files
 confs/*.yaml
 confs/*.yml
+data/*
