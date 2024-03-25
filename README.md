@@ -73,9 +73,9 @@ Open the resume_summary.csv, add the label column, and fill in the data of 0 or 
 # Run training code
 cd bin/
 python training.py
+```
 
 In this example, we assume that the dataset contains two columns: 'text' which contains the text of resumes, and 'label' which contains the labels (1 for passed screening, 0 for failed screening). We use TF-IDF for feature extraction and Logistic Regression for training and prediction. Finally, we print the accuracy and classification report of the model.
-```
 
 ### Prediction
 
@@ -92,4 +92,7 @@ Interpret the prediction results: Based on the model's prediction, you'll know w
 Here's a simple example code demonstrating how to perform inference with the trained model:
 
 ```bash
+# Run screening code
+cd bin/
+python screening.py
 ```
