@@ -1,10 +1,10 @@
 """
 coding=utf-8
 """
+from datetime import datetime
 import logging
 import os
 import re
-import subprocess
 
 import pandas
 import yaml
@@ -126,6 +126,7 @@ def term_match(string_to_search, term):
         logging.error('Error occurred during regex search')
         return None
 
+
 def convert_pdf(f):
 
     # Create intermediate output file
@@ -141,4 +142,7 @@ def convert_pdf(f):
     return open(output_filepath).read()
 
 
-
+def extract_timestamps(path):
+    modification_time = os.path.getmtime(path)
+    time_readable = datetime.fromtimestamp(modification_time)
+    return time_readable

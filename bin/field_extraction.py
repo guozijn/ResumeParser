@@ -1,30 +1,44 @@
+import re
 import logging
 
 from gensim.utils import simple_preprocess
+from spacy.matcher import Matcher
 
 from bin import lib
 
 EMAIL_REGEX = r"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}"
 PHONE_REGEX = r"\(?(\d{3})?\)?[\s\.-]{0,2}?(\d{3})[\s\.-]{0,2}(\d{4})"
+PHONE_REGEX_CN = r"(1[3-9]\d{9})"
 NAME_REGEX = r'[a-z]+(\s+[a-z]+)?'
+NAME_REGEX_CN = r'^[\u4e00-\u9fa5]{2,4}$'
 
 
-def candidate_name_extractor(input_string, nlp):
+def candidate_name_extractor(input_string, nlp, lang):
 
-    doc = nlp(input_string)
+    doc = nlp(input_string.replace("\n", " "))
 
     # Extract entities
     doc_entities = doc.ents
 
+    # Use regex to match names
+    names = [name for name in input_string.split('\n') if re.match(NAME_REGEX_CN, name)]
+
     # Subset to person type entities
-    doc_persons = filter(lambda x: x.label_ == 'PERSON', doc_entities)
-    doc_persons = filter(lambda x: len(x.text.strip().split()) >= 2, doc_persons)
-    doc_persons = map(lambda x: x.text.strip(), doc_persons)
-    doc_persons = list(doc_persons)
+    if lang == 'en':
+        doc_persons = filter(lambda x: x.label_ == 'PERSON', doc_entities)
+        doc_persons = filter(lambda x: len(x.text.strip().split()) >= 2, doc_persons)
+        doc_persons = map(lambda x: x.text.strip(), doc_persons)
+        doc_persons = list(doc_persons)
+
+    else:
+        doc_persons = filter(lambda x: x.label_ == 'PERSON', doc_entities)
+        doc_persons = list(doc_persons)
+        doc_persons.insert(0, names[0])
 
     # Assuming that the first Person entity with more than two tokens is the candidate's name
     if len(doc_persons) > 0:
         return doc_persons[0]
+
     return "NOT FOUND"
 
 
@@ -64,4 +78,4 @@ def extract_skills(resume_text, extractor, items_of_interest):
         if skill_matches > 0:
             matched_skills.add(skill_name)
 
-    return matched_skills
+    return ','.join(matched_skills)

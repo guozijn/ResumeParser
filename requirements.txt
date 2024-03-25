@@ -3,3 +3,4 @@ pandas==2.2.1
 pdfminer.six==20231228
 spacy==3.7.4
 PyYAML==6.0.1
+sklearn

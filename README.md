@@ -10,6 +10,7 @@ pip install -r requirements.txt
 
 # Retrieve language model from spacy
 python -m spacy download en_core_web_sm
+python -m spacy download zh_core_web_sm
 
 # Run code (with default configurations)
 cd bin/
@@ -59,5 +60,36 @@ The configuration file has a few parameters you can tweak:
  machine learning, machine-learning]`)
  - `universities`: A YAML list of universities you'd like to search for
 
-## Contact
-Feel free to contact me at `13herger <at> gmail <dot> com`. If you're interested in projects like this, check out my [website](http://hergertarian.com) and [blog](http://hergertarian.com/blog)
+
+## Resume Screening with Supervised Learning
+
+Resume screening is a classic binary classification problem that can be solved using supervised learning algorithms.
+
+### Add labels to resume_summary.csv
+
+Open the resume_summary.csv, add the label column, and fill in the data of 0 or 1 in it. 1 indicates that the screening passes, and 0 indicates that the screening fails.
+
+```bash
+# Run training code
+cd bin/
+python training.py
+
+In this example, we assume that the dataset contains two columns: 'text' which contains the text of resumes, and 'label' which contains the labels (1 for passed screening, 0 for failed screening). We use TF-IDF for feature extraction and Logistic Regression for training and prediction. Finally, we print the accuracy and classification report of the model.
+```
+
+### Prediction
+
+After training, you can perform inference (or prediction) using the trained model. Here are the general steps for performing inference with a trained model:
+
+Prepare the data for prediction: Obtain the resumes you want to predict on. These data should have the same format and features as the training data. If you've converted resume text into feature vectors, you'll need to process the new resume text using the same method.
+
+Feature extraction: Extract features from the resumes you want to predict on. This typically involves using the same method (such as TF-IDF) to convert text into feature vectors.
+
+Perform prediction with the trained model: Input the extracted feature vectors into the trained model, and use the model's predict method to make predictions. The model will output the predicted class (passed screening or failed screening).
+
+Interpret the prediction results: Based on the model's prediction, you'll know which category the new resume is classified into. You can interpret the prediction results or take further actions as needed.
+
+Here's a simple example code demonstrating how to perform inference with the trained model:
+
+```bash
+```
