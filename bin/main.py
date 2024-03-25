@@ -5,6 +5,7 @@ coding=utf-8
 Code Template
 
 """
+import argparse
 import inspect
 import logging
 import os
@@ -30,28 +31,31 @@ def main():
     """
     logging.getLogger().setLevel(logging.INFO)
 
+    # Add command line arguments
+    args = parse_arguments()
+
     # Extract data from upstream.
-    observations = extract()
+    observations = extract(args.config)
 
     # Spacy: Spacy NLP
     nlp = spacy.load('en_core_web_sm')
 
     # Transform data to have appropriate fields
-    observations, nlp = transform(observations, nlp)
+    observations, nlp = transform(args.config, observations, nlp)
 
     # Load data for downstream consumption
-    load(observations, nlp)
+    load(args.config, observations, nlp)
 
     pass
 
-def extract():
+def extract(config):
     logging.info('Begin extract')
 
     # Reference variables
     candidate_file_agg = list()
 
     # Create list of candidate files
-    for root, subdirs, files in os.walk(lib.get_conf('resume_directory')):
+    for root, subdirs, files in os.walk(lib.get_conf(config, 'resume_directory')):
         folder_files = map(lambda x: os.path.join(root, x), files)
         candidate_file_agg.extend(folder_files)
 
@@ -69,12 +73,12 @@ def extract():
     observations['text'] = observations['file_path'].apply(lib.convert_pdf)
 
     # Archive schema and return
-    lib.archive_dataset_schemas('extract', locals(), globals())
+    lib.archive_dataset_schemas(config, 'extract', locals(), globals())
     logging.info('End extract')
     return observations
 
 
-def transform(observations, nlp):
+def transform(config, observations, nlp):
     # TODO Docstring
     logging.info('Begin transform')
 
@@ -92,17 +96,18 @@ def transform(observations, nlp):
     observations['phone'] = observations['text'].apply(lambda x: lib.term_match(x, field_extraction.PHONE_REGEX))
 
     # Extract skills
-    observations = field_extraction.extract_fields(observations)
+    observations = field_extraction.extract_fields(config, observations)
 
     # Archive schema and return
-    lib.archive_dataset_schemas('transform', locals(), globals())
+    lib.archive_dataset_schemas(config, 'transform', locals(), globals())
     logging.info('End transform')
     return observations, nlp
 
 
-def load(observations, nlp):
+def load(config, observations, nlp):
     logging.info('Begin load')
-    output_path = os.path.join(lib.get_conf('summary_output_directory'), 'resume_summary.csv')
+    output_path = os.path.join(
+        lib.get_conf(config, 'summary_output_directory'), 'resume_summary.csv')
 
     logging.info('Results being output to {}'.format(output_path))
     print('Results output to {}'.format(output_path))
@@ -110,6 +115,16 @@ def load(observations, nlp):
     observations.to_csv(path_or_buf=output_path, index_label='index')
     logging.info('End transform')
     pass
+
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(description='Script description')
+    parser.add_argument(
+        '--config',
+        default='../confs/config.yaml',
+        help='Path to the configuration file')
+    args = parser.parse_args()
+    return args
 
 
 # Main section

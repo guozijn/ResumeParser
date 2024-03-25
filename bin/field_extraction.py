@@ -28,8 +28,8 @@ def candidate_name_extractor(input_string, nlp):
     return "NOT FOUND"
 
 
-def extract_fields(df):
-    for extractor, items_of_interest in lib.get_conf('extractors').items():
+def extract_fields(config, df):
+    for extractor, items_of_interest in lib.get_conf(config, 'extractors').items():
         df[extractor] = df['text'].apply(lambda x: extract_skills(x, extractor, items_of_interest))
     return df
 

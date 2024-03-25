@@ -18,8 +18,7 @@ AVAILABLE_EXTENSIONS = {'.csv', '.doc', '.docx', '.eml', '.epub', '.gif', '.htm'
                         '.tif', '.tiff', '.tsv', '.txt', '.wav', '.xls', '.xlsx'}
 
 
-def load_confs():
-    confs_path = os.path.join(os.path.dirname(os.getcwd()), 'confs/config.yaml')
+def load_confs(confs_path):
 
     # TODO Docstring
     global CONFS
@@ -36,11 +35,11 @@ def load_confs():
     return CONFS
 
 
-def get_conf(conf_name):
-    return load_confs()[conf_name]
+def get_conf(confs_path, conf_name):
+    return load_confs(confs_path)[conf_name]
 
 
-def archive_dataset_schemas(step_name, local_dict, global_dict):
+def archive_dataset_schemas(confs_path, step_name, local_dict, global_dict):
     """
     Archive the schema for all available Pandas DataFrames
      - Determine which objects in namespace are Pandas DataFrames
@@ -59,7 +58,7 @@ def archive_dataset_schemas(step_name, local_dict, global_dict):
     logging.info('Archiving data set schema(s) for step name: {}'.format(step_name))
 
     # Reference variables
-    data_schema_dir = get_conf('data_schema_dir')
+    data_schema_dir = get_conf(confs_path, 'data_schema_dir')
     schema_output_path = os.path.join(data_schema_dir, step_name + '.csv')
     schema_agg = list()
 
@@ -102,7 +101,7 @@ def term_count(string_to_search, term):
         result = re.findall(regular_expression, string_to_search)
         return len(result)
     except Exception:
-        logging.error('Error occurred during regex search')
+        logging.warn('Error occurred during regex search')
         return 0
 
 
